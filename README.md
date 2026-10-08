@@ -1,16 +1,78 @@
-# React + Vite
+# Itzfizz — Scroll-Driven Hero Animation
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A scroll-driven interactive hero section built as a Web Development Internship assignment for **Itzfizz Digital**. 
 
-Currently, two official plugins are available:
+Inspired by modern creative web interactions, this project features a car traversing an asphalt road track tied directly to the user's scroll progress, revealing a vibrant progress trail and dynamic impact statistics.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+🌐 **Live Demo:** [https://gangotrigupta-61.github.io/Itzfizz/](https://gangotrigupta-61.github.io/Itzfizz/)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Features
 
-## Expanding the Oxlint configuration
+- **Scroll-Driven Animation:** Pinned hero viewport (`ScrollTrigger` with `scrub: 1.1`) where movement is directly connected to user scroll rather than autoplay loops.
+- **Dynamic Road Trail & Headline Reveal:** An emerald progress trail expands behind the sports car, progressively revealing the bold **WELCOME ITZFIZZ** headline through GPU-accelerated clipping.
+- **Staggered Metric Cards:** Four impact statistic cards (`58%`, `23%`, `27%`, `40%`) appear smoothly at distinct milestones as the car advances along the track.
+- **Performance Optimized:** Uses composite properties (`transform: translate`, `opacity`, `scale`) to maintain 60+ FPS without layout thrashing or scroll reflows.
+- **Responsive Layout:** Adapts cleanly across desktop, tablet, and mobile viewports with no horizontal overflow.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+---
+
+## 🛠️ Tech Stack
+
+- **Framework:** React 19 + Vite
+- **Animation:** GSAP (GreenSock) & GSAP ScrollTrigger
+- **Styling:** Tailwind CSS v4 & Custom CSS
+- **Deployment:** GitHub Pages
+
+---
+
+## 📁 Project Structure
+
+```text
+src/
+├── components/
+│   └── HeroSection.jsx    # Hero layout, GSAP timelines, and road animations
+├── App.jsx                # Root container with hero and transition section
+├── index.css              # Global styles and Tailwind directives
+└── main.jsx               # Application entry point
+public/
+├── car.jpeg               # Primary car asset
+└── car.png                # Fallback car asset
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v18 or newer)
+- npm or yarn
+
+### Installation & Local Run
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/gangotrigupta-61/Itzfizz.git
+   cd Itzfizz
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Create production build:
+   ```bash
+   npm run build
+   ```
+
+---
+
+## 📄 License
+Created for internship evaluation purposes.
