@@ -4,63 +4,91 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// Statistics matching the reference design and screenshot
-const stats = [
+// 4 Clearly visible percentage/impact metric cards matching assignment specs
+const statsData = [
   {
-    value: '58%',
-    label: 'Increase in pick up point use',
-    bg: '#def54f',
-    textColor: '#111111',
-    numColor: '#111111',
+    id: '01',
+    value: '92%',
+    label: 'Client Satisfaction',
+    desc: 'Exceeded project milestones',
+    accent: '#bef264',
   },
   {
-    value: '27%',
-    label: 'Increase in pick up point use',
-    bg: '#333333',
-    textColor: '#ffffff',
-    numColor: '#ffffff',
+    id: '02',
+    value: '87%',
+    label: 'Projects Delivered',
+    desc: 'Full-cycle digital delivery',
+    accent: '#ffffff',
   },
   {
-    value: '23%',
-    label: 'Decreased in customer phone calls',
-    bg: '#6ac9ff',
-    textColor: '#111111',
-    numColor: '#111111',
+    id: '03',
+    value: '76%',
+    label: 'Reduced Response Time',
+    desc: 'Optimized user experiences',
+    accent: '#38bdf8',
   },
   {
-    value: '40%',
-    label: 'Decreased in customer phone calls',
-    bg: '#fa7328',
-    textColor: '#111111',
-    numColor: '#111111',
+    id: '04',
+    value: '95%',
+    label: 'Average ROI Growth',
+    desc: 'Measurable client impact',
+    accent: '#fb923c',
   },
 ]
 
-// Impact statistic card component matching the reference layout
+// Reusable Stat Card component — clean, readable, attractive, and always visible
 function StatCard({ stat, cardRef }) {
   return (
     <div
       ref={cardRef}
       className="stat-card"
       style={{
-        background: stat.bg,
-        borderRadius: '10px',
-        padding: 'clamp(20px, 2.6vw, 30px) clamp(22px, 2.8vw, 32px)',
-        minWidth: 'clamp(170px, 19vw, 240px)',
-        maxWidth: '280px',
+        background: 'rgba(20, 22, 32, 0.88)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '14px',
+        padding: 'clamp(14px, 1.8vw, 20px) clamp(16px, 2.2vw, 24px)',
+        minWidth: 'clamp(150px, 17vw, 210px)',
+        maxWidth: '240px',
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        opacity: 0,
-        transform: 'translateY(24px)',
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
       }}
     >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '4px',
+        }}
+      >
+        <span
+          style={{
+            fontSize: '0.65rem',
+            fontWeight: 700,
+            letterSpacing: '0.15em',
+            color: 'rgba(240, 240, 245, 0.45)',
+          }}
+        >
+          {stat.id}
+        </span>
+        <span
+          style={{
+            width: '6px',
+            height: '6px',
+            borderRadius: '50%',
+            backgroundColor: stat.accent,
+            display: 'inline-block',
+          }}
+        />
+      </div>
       <p
         style={{
-          fontSize: 'clamp(2.8rem, 4.4vw, 3.8rem)',
-          fontWeight: 600,
-          color: stat.numColor,
+          fontSize: 'clamp(1.9rem, 3.2vw, 2.7rem)',
+          fontWeight: 800,
+          color: stat.accent,
           lineHeight: 1,
           letterSpacing: '-0.02em',
         }}
@@ -69,34 +97,47 @@ function StatCard({ stat, cardRef }) {
       </p>
       <p
         style={{
-          fontSize: 'clamp(0.85rem, 1.1vw, 1.05rem)',
-          color: stat.textColor,
-          marginTop: '8px',
-          fontWeight: 500,
-          lineHeight: 1.3,
+          fontSize: 'clamp(0.78rem, 1vw, 0.88rem)',
+          color: '#f0f0f5',
+          marginTop: '6px',
+          fontWeight: 600,
+          lineHeight: 1.25,
         }}
       >
         {stat.label}
+      </p>
+      <p
+        style={{
+          fontSize: '0.7rem',
+          color: 'rgba(240, 240, 245, 0.5)',
+          marginTop: '2px',
+          lineHeight: 1.2,
+        }}
+      >
+        {stat.desc}
       </p>
     </div>
   )
 }
 
 export default function HeroSection() {
-  const sectionRef = useRef(null)
+  const heroRef = useRef(null)
   const roadRef = useRef(null)
-  const roadFillRef = useRef(null)
+  const trailRef = useRef(null)
   const carRef = useRef(null)
   const carImgRef = useRef(null)
-  const cardsRef = useRef([])
+  const headlineRef = useRef(null)
+  const statsRef = useRef([])
 
-  // Car image source with fallback and automatic background cleaner
-  const [carSrc, setCarSrc] = useState('/car.jpeg')
+  // Safe base URL for GitHub Pages deployment
+  const baseUrl = import.meta.env.BASE_URL
+  const [carSrc, setCarSrc] = useState(`${baseUrl}car.png`)
+  const [useFallbackSvg, setUseFallbackSvg] = useState(false)
 
-  // Remove the gray/white checkerboard pattern from car.jpeg if present
+  // Remove fake checkerboard background pattern from car image if present
   useEffect(() => {
     const img = new Image()
-    img.src = '/car.jpeg'
+    img.src = `${baseUrl}car.png`
     img.onload = () => {
       try {
         const canvas = document.createElement('canvas')
@@ -130,257 +171,408 @@ export default function HeroSection() {
         // Keep original if canvas restricted
       }
     }
-  }, [])
+    img.onerror = () => {
+      const fallbackImg = new Image()
+      fallbackImg.src = `${baseUrl}car.jpeg`
+      fallbackImg.onload = () => setCarSrc(`${baseUrl}car.jpeg`)
+      fallbackImg.onerror = () => setUseFallbackSvg(true)
+    }
+  }, [baseUrl])
 
   useEffect(() => {
-    const section = sectionRef.current
+    const hero = heroRef.current
     const road = roadRef.current
     const car = carRef.current
-    const roadFill = roadFillRef.current
-    const cards = cardsRef.current.filter(Boolean)
+    const trail = trailRef.current
+    const headline = headlineRef.current
+    const cards = statsRef.current.filter(Boolean)
 
-    // ── 1. Page Load Animation ──────────────────────────────────────
-    const loadTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+    if (!hero || !car || !trail) return
 
-    // Car smoothly settles into the start line at the left edge
-    loadTl
-      .fromTo(
-        car,
-        { opacity: 0, x: -70 },
-        { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' }
-      )
-      .fromTo(
-        roadFill,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.5 },
-        '-=0.4'
-      )
+    // GSAP Context for safe, robust cleanup in React
+    const ctx = gsap.context(() => {
+      // ── 1. Initial Page Load Animation ─────────────────────────────
+      const loadTimeline = gsap.timeline({ defaults: { ease: 'power3.out' } })
 
-    // ── 2. Scroll-Driven Animation ──────────────────────────────────
-    const scrollTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: 'top top',
-        end: '+=250%',
-        pin: true,
-        scrub: 1.1,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-      },
-    })
+      loadTimeline
+        .fromTo(
+          headline,
+          { opacity: 0, y: 24 },
+          { opacity: 1, y: 0, duration: 0.8 }
+        )
+        .fromTo(
+          car,
+          { opacity: 0, x: -70 },
+          { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' },
+          '-=0.5'
+        )
+        .fromTo(
+          trail,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.4 },
+          '-=0.4'
+        )
+        .fromTo(
+          cards,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power2.out' },
+          '-=0.3'
+        )
 
-    // Calculate distance so that at the end of the scroll,
-    // the car drives off the right edge leaving only its rear ~32% visible
-    const getTravelDistance = () => {
-      const roadWidth = road ? road.offsetWidth : section.offsetWidth
-      const carWidth = carImgRef.current ? carImgRef.current.offsetWidth : 180
-      return roadWidth - carWidth * 0.32
-    }
-
-    // Car travels across the road to the target end position
-    scrollTl.to(
-      car,
-      {
-        x: () => getTravelDistance(),
-        ease: 'none',
-      },
-      0
-    )
-
-    // Green trail starts as the initial small sliver behind the car (~65px) and expands to 100%
-    scrollTl.fromTo(
-      roadFill,
-      { width: 'clamp(55px, 6.5vw, 75px)' },
-      {
-        width: '100%',
-        ease: 'none',
-      },
-      0
-    )
-
-    // Sequence the cards to appear at distinct scroll milestones as the car advances
-    // Order: Card 0 (58%), Card 2 (23%), Card 1 (27%), Card 3 (40%)
-    const cardAppearances = [
-      { el: cards[0], start: 0.16, end: 0.32 },
-      { el: cards[2], start: 0.36, end: 0.52 },
-      { el: cards[1], start: 0.56, end: 0.72 },
-      { el: cards[3], start: 0.74, end: 0.90 },
-    ]
-
-    cardAppearances.forEach(({ el, start, end }) => {
-      if (!el) return
-      scrollTl.fromTo(
-        el,
-        { opacity: 0, y: 24 },
-        {
-          opacity: 1,
-          y: 0,
-          ease: 'power2.out',
-          duration: end - start,
+      // ── 2. Scroll-Driven Animation ──────────────────────────────────
+      const scrollTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: hero,
+          start: 'top top',
+          end: '+=200%',
+          pin: true,
+          scrub: 1.1,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
         },
-        start
+      })
+
+      // Calculate travel distance so the car travels across the track
+      const getTravelDistance = () => {
+        const roadWidth = road ? road.offsetWidth : hero.offsetWidth
+        const carWidth = carImgRef.current ? carImgRef.current.offsetWidth : 160
+        // Front extends past the right edge while rear quarter stays visible
+        return Math.max(roadWidth - carWidth * 0.35, 120)
+      }
+
+      // Car drives smoothly along the track tied to scroll progress
+      scrollTimeline.to(
+        car,
+        {
+          x: () => getTravelDistance(),
+          ease: 'none',
+        },
+        0
       )
-    })
+
+      // Green trail expands behind car across the road
+      scrollTimeline.fromTo(
+        trail,
+        { width: 'clamp(50px, 6vw, 75px)' },
+        {
+          width: '100%',
+          ease: 'none',
+        },
+        0
+      )
+
+      // Cards remain visible with subtle interactive emphasis during scroll
+      cards.forEach((card, index) => {
+        const progress = 0.15 + index * 0.2
+        scrollTimeline.to(
+          card,
+          {
+            scale: 1.03,
+            boxShadow: '0 12px 30px rgba(0, 0, 0, 0.45)',
+            duration: 0.12,
+            ease: 'power1.out',
+            yoyo: true,
+            repeat: 1,
+          },
+          progress
+        )
+      })
+    }, hero)
 
     const handleResize = () => ScrollTrigger.refresh()
     window.addEventListener('resize', handleResize)
 
     return () => {
       window.removeEventListener('resize', handleResize)
-      loadTl.kill()
-      scrollTl.kill()
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
+      ctx.revert()
     }
   }, [])
 
   return (
     <section
-      ref={sectionRef}
+      ref={heroRef}
       className="overflow-hidden"
       style={{
         height: '100vh',
         width: '100%',
-        background: '#d1d1d1',
+        background: 'linear-gradient(160deg, #090a10 0%, #0d0f1b 50%, #08090e 100%)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: 'clamp(16px, 3vh, 32px) 0',
+        padding: 'clamp(16px, 2.8vh, 28px) clamp(16px, 3.5vw, 40px)',
         position: 'relative',
         boxSizing: 'border-box',
       }}
     >
-      {/* ── Top Area: Right-aligned Stat Cards (58% & 27%) ── */}
+      {/* Background ambient lighting */}
       <div
-        className="flex justify-end items-center flex-wrap gap-4 sm:gap-6 w-full"
+        aria-hidden="true"
         style={{
-          position: 'relative',
-          zIndex: 20,
-          paddingRight: 'clamp(24px, 10vw, 130px)',
-          paddingLeft: 'clamp(16px, 4vw, 48px)',
-          boxSizing: 'border-box',
-          minHeight: '80px',
+          position: 'absolute',
+          top: '25%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '65vw',
+          height: '40vh',
+          background: 'radial-gradient(ellipse, rgba(34, 197, 94, 0.08) 0%, transparent 70%)',
+          pointerEvents: 'none',
         }}
+      />
+
+      {/* ── Top Area: Stat Card 01, Brand Header, Stat Card 02 ── */}
+      <div
+        className="flex justify-between items-start flex-wrap gap-3 w-full"
+        style={{ position: 'relative', zIndex: 20 }}
       >
         <StatCard
-          stat={stats[0]}
-          cardRef={(el) => (cardsRef.current[0] = el)}
+          stat={statsData[0]}
+          cardRef={(el) => (statsRef.current[0] = el)}
         />
+
+        {/* Center brand badge */}
+        <div
+          style={{
+            alignSelf: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '4px',
+          }}
+        >
+          <div
+            style={{
+              padding: '6px 18px',
+              borderRadius: '999px',
+              background: 'rgba(255, 255, 255, 0.04)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+            }}
+          >
+            <p
+              style={{
+                fontSize: '0.68rem',
+                letterSpacing: '0.28em',
+                color: 'rgba(240, 240, 245, 0.65)',
+                textTransform: 'uppercase',
+                fontWeight: 700,
+              }}
+            >
+              ITZFIZZ DIGITAL
+            </p>
+          </div>
+          <span
+            style={{
+              fontSize: '0.62rem',
+              letterSpacing: '0.12em',
+              color: 'rgba(34, 197, 94, 0.8)',
+              fontWeight: 600,
+            }}
+          >
+            ● Scroll Driven Experience
+          </span>
+        </div>
+
         <StatCard
-          stat={stats[1]}
-          cardRef={(el) => (cardsRef.current[1] = el)}
+          stat={statsData[1]}
+          cardRef={(el) => (statsRef.current[1] = el)}
         />
       </div>
 
-      {/* ── Middle Area: Full-Width Road Track, Green Trail, Headline & Car ── */}
+      {/* ── Middle Area: Road Track, Headline, Green Trail & Car ── */}
       <div
         ref={roadRef}
         className="relative w-full overflow-hidden"
         style={{
-          height: 'clamp(170px, 24vh, 230px)',
-          background: '#1e1e1e',
+          height: 'clamp(150px, 21vh, 210px)',
+          background: '#13151f',
+          borderRadius: '14px',
+          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: 'inset 0 2px 14px rgba(0, 0, 0, 0.6), 0 10px 30px rgba(0, 0, 0, 0.3)',
           display: 'flex',
           alignItems: 'center',
           position: 'relative',
         }}
       >
-        {/* Green progress trail: starts as sliver behind the car, grows across road, reveals bold text */}
+        {/* Base headline: visible in elegant silver before trail reaches it */}
         <div
-          ref={roadFillRef}
+          ref={headlineRef}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1,
+            pointerEvents: 'none',
+            userSelect: 'none',
+          }}
+        >
+          <h1
+            style={{
+              fontSize: 'clamp(1.6rem, 5.2vw, 4.4rem)',
+              fontWeight: 900,
+              letterSpacing: 'clamp(0.12em, 0.35vw, 0.28em)',
+              color: 'rgba(240, 240, 245, 0.25)',
+              textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            W E L C O M E &nbsp; I T Z F I Z Z
+          </h1>
+        </div>
+
+        {/* Green progress trail: grows across road behind the car */}
+        <div
+          ref={trailRef}
           style={{
             position: 'absolute',
             top: 0,
             left: 0,
             height: '100%',
-            width: 'clamp(55px, 6.5vw, 75px)',
-            background: '#45db7d',
+            width: 'clamp(50px, 6vw, 75px)',
+            background: 'linear-gradient(90deg, #16a34a 0%, #22c55e 100%)',
+            boxShadow: '0 0 30px rgba(34, 197, 94, 0.45)',
             overflow: 'hidden',
             zIndex: 2,
           }}
         >
-          {/* Headline inside green trail: revealed in bold black as green trail covers it */}
+          {/* Duplicate headline inside green trail: revealed in bold dark text */}
           <div
             style={{
               position: 'absolute',
               top: 0,
               left: 0,
-              width: '100%',
+              width: '100vw',
               height: '100%',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'flex-start',
-              paddingLeft: 'clamp(24px, 4.8vw, 68px)',
+              justifyContent: 'center',
               pointerEvents: 'none',
               userSelect: 'none',
-              boxSizing: 'border-box',
             }}
           >
             <h1
               style={{
-                fontSize: 'clamp(2.4rem, 7.5vw, 6.4rem)',
+                fontSize: 'clamp(1.6rem, 5.2vw, 4.4rem)',
                 fontWeight: 900,
-                letterSpacing: 'clamp(0.02em, 0.1vw, 0.05em)',
-                color: '#111111',
+                letterSpacing: 'clamp(0.12em, 0.35vw, 0.28em)',
+                color: '#090a0f',
                 textTransform: 'uppercase',
                 whiteSpace: 'nowrap',
               }}
             >
-              WELCOME ITZFIZZ
+              W E L C O M E &nbsp; I T Z F I Z Z
             </h1>
           </div>
         </div>
 
-        {/* Car container — centered vertically in the road */}
+        {/* Car container — centered vertically on the road, starts at left */}
         <div
           style={{
             position: 'absolute',
-            top: 0,
+            top: '50%',
             left: 0,
-            height: '100%',
+            transform: 'translateY(-50%)',
+            zIndex: 10,
             display: 'flex',
             alignItems: 'center',
-            zIndex: 10,
             pointerEvents: 'none',
           }}
         >
           {/* GSAP translates carRef horizontally along X-axis */}
           <div ref={carRef} style={{ display: 'inline-block' }}>
-            <img
-              ref={carImgRef}
-              src={carSrc}
-              alt="A sleek sports car driving through the hero section"
-              onError={() => setCarSrc('/car.png')}
-              style={{
-                height: 'clamp(160px, 23vh, 220px)',
-                width: 'auto',
-                display: 'block',
-                // Flipped horizontally so front faces right (direction of travel)
-                transform: 'scaleX(-1)',
-                filter: 'drop-shadow(0 4px 16px rgba(0, 0, 0, 0.35))',
-              }}
-            />
+            {useFallbackSvg ? (
+              // Clean sports car SVG fallback if image fails
+              <svg
+                width="160"
+                height="80"
+                viewBox="0 0 160 80"
+                fill="none"
+                style={{
+                  display: 'block',
+                  filter: 'drop-shadow(0 8px 18px rgba(0, 0, 0, 0.6))',
+                }}
+              >
+                <path
+                  d="M10 25 C10 15, 30 10, 80 10 C130 10, 150 20, 155 35 C158 45, 150 65, 140 70 C100 75, 40 75, 15 65 C8 55, 10 35, 10 25 Z"
+                  fill="#f97316"
+                />
+                <path
+                  d="M45 20 C60 18, 105 18, 120 22 C125 35, 120 50, 115 55 C95 58, 65 58, 48 55 C42 45, 40 30, 45 20 Z"
+                  fill="#090a0f"
+                />
+                <rect x="5" y="15" width="10" height="50" rx="3" fill="#18181b" />
+              </svg>
+            ) : (
+              <img
+                ref={carImgRef}
+                src={carSrc}
+                alt="A sleek McLaren sports car driving through the hero section"
+                onError={() => {
+                  if (carSrc.endsWith('.png')) {
+                    setCarSrc(`${baseUrl}car.jpeg`)
+                  } else {
+                    setUseFallbackSvg(true)
+                  }
+                }}
+                style={{
+                  height: 'clamp(110px, 16vh, 165px)',
+                  width: 'auto',
+                  display: 'block',
+                  // Flipped horizontally so front faces right (direction of travel)
+                  transform: 'scaleX(-1)',
+                  filter: 'drop-shadow(0 8px 22px rgba(0, 0, 0, 0.6))',
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
 
-      {/* ── Bottom Area: Right-aligned Stat Cards (23% & 40%) ── */}
+      {/* ── Bottom Area: Stat Card 03, Scroll Indicator, Stat Card 04 ── */}
       <div
-        className="flex justify-end items-center flex-wrap gap-4 sm:gap-6 w-full"
-        style={{
-          position: 'relative',
-          zIndex: 20,
-          paddingRight: 'clamp(32px, 12.5vw, 170px)',
-          paddingLeft: 'clamp(16px, 4vw, 48px)',
-          boxSizing: 'border-box',
-          minHeight: '80px',
-        }}
+        className="flex justify-between items-end flex-wrap gap-3 w-full"
+        style={{ position: 'relative', zIndex: 20 }}
       >
         <StatCard
-          stat={stats[2]}
-          cardRef={(el) => (cardsRef.current[2] = el)}
+          stat={statsData[2]}
+          cardRef={(el) => (statsRef.current[2] = el)}
         />
+
+        {/* Scroll exploration indicator */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '6px',
+            alignSelf: 'center',
+          }}
+        >
+          <span
+            style={{
+              fontSize: '0.68rem',
+              letterSpacing: '0.24em',
+              color: 'rgba(240, 240, 245, 0.55)',
+              textTransform: 'uppercase',
+              fontWeight: 600,
+            }}
+          >
+            Scroll to explore ↓
+          </span>
+          <span
+            style={{
+              width: '18px',
+              height: '2px',
+              backgroundColor: 'rgba(34, 197, 94, 0.6)',
+              borderRadius: '999px',
+            }}
+          />
+        </div>
+
         <StatCard
-          stat={stats[3]}
-          cardRef={(el) => (cardsRef.current[3] = el)}
+          stat={statsData[3]}
+          cardRef={(el) => (statsRef.current[3] = el)}
         />
       </div>
     </section>
